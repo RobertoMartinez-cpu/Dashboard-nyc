@@ -10,16 +10,12 @@ def get_db():
     conn = pymysql.connect(
         host=os.getenv('DB_HOST', 'gateway01.us-east-1.prod.aws.tidbcloud.com'),
         user=os.getenv('DB_USER', '2Kvta8dwg25Rg7B.root'),
-        password=os.getenv('DB_PASSWORD', '4YcUSVRCWmgehmso'),
+        password=os.getenv('DB_PASSWORD', '0gGJ26FL6DVGNkA5'),
         database=os.getenv('DB_NAME', 'dashboard'),
         port=int(os.getenv('DB_PORT', 4000)),
-        ssl_verify_cert=True,
-        ssl_verify_identity=True,
+        ssl={'ssl': True},  # Activa SSL básico compatible con TiDB
         cursorclass=pymysql.cursors.DictCursor
     )
-    with conn.cursor() as cursor:
-        cursor.execute("CREATE DATABASE IF NOT EXISTS dashboard;")
-        cursor.execute("USE dashboard;")
     return conn
 
 @app.route('/', methods=['GET'])
@@ -37,7 +33,7 @@ def get_viajes():
             cursor.execute("""
                 SELECT id_viaje, zona_origen_id, monto_tarifa, estado_viaje, 
                        DATE_FORMAT(fecha_registro, '%Y-%m-%d %H:%i') AS fecha 
-                FROM dashboard.viajes 
+                FROM viajes 
                 ORDER BY id_viaje DESC 
                 LIMIT 50;
             """)
@@ -56,13 +52,13 @@ def get_metricas():
                     COUNT(*) AS total_viajes,
                     IFNULL(ROUND(AVG(monto_tarifa), 2), 0) AS tarifa_promedio,
                     IFNULL(SUM(CASE WHEN estado_viaje = 'cancelado' THEN 1 ELSE 0 END), 0) AS viajes_cancelados
-                FROM dashboard.viajes;
+                FROM viajes;
             """)
             kpis = cursor.fetchone()
 
             cursor.execute("""
                 SELECT zona_origen_id, COUNT(*) AS total
-                FROM dashboard.viajes
+                FROM viajes
                 GROUP BY zona_origen_id
                 ORDER BY total DESC
                 LIMIT 5;
@@ -96,7 +92,7 @@ def add_viaje():
     conn = get_db()
     try:
         with conn.cursor() as cursor:
-            sql = "INSERT INTO dashboard.viajes (zona_origen_id, monto_tarifa, estado_viaje) VALUES (%s, %s, %s)"
+            sql = "INSERT INTO viajes (zona_origen_id, monto_tarifa, estado_viaje) VALUES (%s, %s, %s)"
             cursor.execute(sql, (zona, tarifa, estado))
             conn.commit()
         return jsonify({'mensaje': 'Viaje registrado con éxito'}), 201
