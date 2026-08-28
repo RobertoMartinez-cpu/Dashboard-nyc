@@ -22,16 +22,16 @@ def get_db():
 def home():
     return jsonify({
         "status": "online",
-        "proyecto": "Transport Data Explorer API"
+        "proyecto": "Transport Data Explorer API",
+        "endpoints": ["/api/viajes", "/api/metricas"]
     }), 200
-
 
 @app.route('/api/viajes', methods=['GET'])
 def get_viajes():
     conn = get_db()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT id_viaje, zona_origen_id, monto_tarifa, estado_viaje, DATE_FORMAT(fecha_registro, '%Y-%m-%d %H:%i') AS fecha FROM viajes ORDER BY id_viaje DESC LIMIT 50;")
+            cursor.execute("SELECT id_viaje, zona_origen_id, monto_tarifa, estado_viaje, DATE_FORMAT(fecha_registro, '%%Y-%%m-%%d %%H:%%i') AS fecha FROM viajes ORDER BY id_viaje DESC LIMIT 50;")
             registros = cursor.fetchall()
         return jsonify(registros), 200
     finally:
@@ -42,7 +42,6 @@ def get_metricas():
     conn = get_db()
     try:
         with conn.cursor() as cursor:
-            # 1. KPIs Generales
             cursor.execute("""
                 SELECT 
                     COUNT(*) AS total_viajes,
@@ -52,7 +51,6 @@ def get_metricas():
             """)
             kpis = cursor.fetchone()
 
-            # 2. Agregación para el gráfico: Conteo por zona
             cursor.execute("""
                 SELECT zona_origen_id, COUNT(*) AS total
                 FROM viajes
@@ -76,7 +74,6 @@ def add_viaje():
     tarifa = data.get('monto_tarifa')
     estado = data.get('estado_viaje', 'completado')
 
-    # Validación de backend
     if not zona or not tarifa:
         return jsonify({'error': 'Faltan campos obligatorios'}), 400
     try:
