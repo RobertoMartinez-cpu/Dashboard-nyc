@@ -1,28 +1,29 @@
+import os
+import pymysql
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import pymysql
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Configuración de conexión a MySQL
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',          # Cambia si tu usuario es diferente
-    'password': '1234', # Coloca tu contraseña de MySQL
-    'database': 'nyc_dashboard',
-    'cursorclass': pymysql.cursors.DictCursor
-}
-
 def get_db():
     return pymysql.connect(
-        host=os.getenv('gateway01.us-east-1.prod.aws.tidbcloud.com', 'localhost'),
-        user=os.getenv('2Kvta8dwg25Rg7B.root', 'root'),
-        password=os.getenv('Tiw3Wowv6iJinVQx', '1234'),
-        database=os.getenv('sys', 'nyc_dashboard'),
-        port=int(os.getenv('4000', 3306)),
+        host=os.getenv('DB_HOST', 'gateway01.us-east-1.prod.aws.tidbcloud.com'),
+        user=os.getenv('DB_USER', '2Kvta8dwg25Rg7B.root'),
+        password=os.getenv('DB_PASSWORD', 'Tiw3Wowv6iJinVQx'),
+        database=os.getenv('DB_NAME', 'sys'),
+        port=int(os.getenv('DB_PORT', 4000)),
+        ssl_verify_cert=True,
+        ssl_verify_identity=True,
         cursorclass=pymysql.cursors.DictCursor
     )
+
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({
+        "status": "online",
+        "proyecto": "Transport Data Explorer API"
+    }), 200
 
 
 @app.route('/api/viajes', methods=['GET'])
