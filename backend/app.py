@@ -11,7 +11,7 @@ def get_db():
         host=os.getenv('DB_HOST', 'gateway01.us-east-1.prod.aws.tidbcloud.com'),
         user=os.getenv('DB_USER', '2Kvta8dwg25Rg7B.root'),
         password=os.getenv('DB_PASSWORD', 'Tiw3Wowv6iJinVQx'),
-        database=os.getenv('DB_NAME', 'sys'),
+        database=os.getenv('DB_NAME', 'dashboard'),
         port=int(os.getenv('DB_PORT', 4000)),
         ssl_verify_cert=True,
         ssl_verify_identity=True,
