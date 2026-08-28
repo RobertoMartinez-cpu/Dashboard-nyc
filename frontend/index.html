@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Quality & Operations Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- CDN de Chart.js para la visualización -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">
+      <h2>Transport Data Explorer</h2>
+      <span>Control de Calidad y Monitoreo Operativo</span>
+    </div>
+    <div class="badge-status">
+      <span class="status-dot"></span> Backend Conectado
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Sección de Tarjetas de Métricas (KPIs) -->
+    <section class="kpi-grid">
+      <div class="card kpi-card">
+        <h3>Total Viajes Registrados</h3>
+        <p class="kpi-value" id="kpi-total">0</p>
+      </div>
+      <div class="card kpi-card">
+        <h3>Tarifa Promedio</h3>
+        <p class="kpi-value" id="kpi-promedio">$0.00</p>
+      </div>
+      <div class="card kpi-card alert-card">
+        <h3>Viajes Cancelados (QA)</h3>
+        <p class="kpi-value" id="kpi-cancelados">0</p>
+      </div>
+    </section>
+
+    <!-- Sección de Gráfico y Formulario -->
+    <section class="dashboard-body">
+      
+      <!-- Panel de Registro (Formulario) -->
+      <div class="card form-panel">
+        <h3>Registrar Nuevo Evento</h3>
+        <form id="form-viaje">
+          <div class="form-group">
+            <label for="zona_id">ID de Zona (Origen):</label>
+            <input type="number" id="zona_id" name="zona_id" placeholder="Ej. 79, 132, 230" required min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="tarifa">Monto de Tarifa ($):</label>
+            <input type="number" id="tarifa" name="tarifa" step="0.01" placeholder="Ej. 150.50" required min="0.01">
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado del Viaje:</label>
+            <select id="estado" name="estado">
+              <option value="completado">Completado</option>
+              <option value="en_curso">En curso</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-primary">Guardar en Base de Datos</button>
+          <div id="alerta-form" class="alerta"></div>
+        </form>
+      </div>
+
+      <!-- Panel de Visualización (Chart.js) -->
+      <div class="card chart-panel">
+        <h3>Top Zonas por Demanda</h3>
+        <div class="chart-container">
+          <canvas id="graficoZonas"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Sección de Tabla de Registros -->
+    <section class="card table-panel">
+      <div class="table-header">
+        <h3>Últimos Registros Auditados</h3>
+        <button id="btn-recargar" class="btn-secondary">Actualizar Datos</button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Zona Origen</th>
+              <th>Tarifa</th>
+              <th>Estado</th>
+              <th>Fecha de Registro</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-cuerpo">
+            <tr>
+              <td colspan="5" style="text-align:center;">Cargando registros...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
