@@ -10,7 +10,7 @@ def get_db():
     conn = pymysql.connect(
         host=os.getenv('DB_HOST', 'gateway01.us-east-1.prod.aws.tidbcloud.com'),
         user=os.getenv('DB_USER', '2Kvta8dwg25Rg7B.root'),
-        password=os.getenv('DB_PASSWORD', '0gGJ26FL6DVGNkA5'),
+        password=os.getenv('DB_PASSWORD', 'IQjtEmdtMJEn2V8Z'),
         database=os.getenv('DB_NAME', 'dashboard'),
         port=int(os.getenv('DB_PORT', 4000)),
         ssl={'ssl': True},  # Activa SSL básico compatible con TiDB
